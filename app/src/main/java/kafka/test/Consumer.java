@@ -10,6 +10,9 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+/*
+https://www.youtube.com/watch?v=NpzwlWYLOdE&list=WL&index=4
+*/
 public class Consumer {
 
 	public static void main(String [] args) {
@@ -30,14 +33,15 @@ public class Consumer {
 
 			//subscribe to topics
 
-			consumer.subscribe(Arrays.asList("java-topic"));
+			consumer.subscribe(Arrays.asList("sample-topic"));
 
 			//poll and consume records
+			// single-threaded implementation
 			while(true) {
 				ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
 
 				for(ConsumerRecord record: records) {
-					logger.info( "Received new records: \n" + record.key());
+					logger.info( "Received new records: " + " key: " + record.key() + " value: " + record.value() + "\n");
 				}
 			}
 
