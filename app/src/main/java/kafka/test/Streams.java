@@ -15,9 +15,14 @@ import org.apache.kafka.streams.kstream.Produced;
 /*
 References:
 https://www.baeldung.com/java-kafka-streams
+http://codingjunkie.net/kafka-streams-yelling-app/
+https://www.youtube.com/watch?v=SQuh7CI1DV8
+bin\windows\kafka-console-producer.bat --topic input-topic --bootstrap-server localhost:9092
+
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic out-topic --from-beginning --formatter kafka.tools.DefaultMessageFormatter --property print-key=true --property print-value=true --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
 */
 public class Streams {
-	private static final Logger logger = LoggerFactory.getLogger(Producer.class);
+	private static final Logger logger = LoggerFactory.getLogger(Streams.class);
 
 	public static void main (String[] args) {
 		//define configuration properties
@@ -30,12 +35,12 @@ public class Streams {
 
 		//open a stream to a source topic
 		StreamsBuilder streamsBuilder = new StreamsBuilder();
-		KStream<String, String> kstream = streamsBuilder.stream("sample-topic");
+		KStream<String, String> kstream = streamsBuilder.stream("input-topic");
 		//map values to uppercase
 		
 	
-  		KStream<String, String> upperStream = kstream.mapValues(String::toUpperCase);
-    	upperStream.to(Serdes.String(), Serdes.String(), "out-topic");
+  		KStream<String, String> upperStream = kstream.mapValues(v -> v.toUpperCase());
+    	upperStream.through("out-topic", Produced.with(Serdes.String(), Serdes.String()));
 
 		//process the stream
 		//kstream.foreach((k,v)-> System.out.println("key=" + k + "value =" + v));
